@@ -1,42 +1,98 @@
 package br.com.cybertech.genius;
 
-/**
- * @title Classe "Genius"
- * @since 29.09.2014
- * @author Brenda Sousa da Mata	- R.A. 248812
- * @author Felipe Rodrigues Gil	- R.A. 248543
+/*******************************************************************************
+ *
+ *                              CYBER GENIUS.
+ *
+ *   A partir desta classe será possível controlar o fluxo de toda a aplicação.
+ * Os métodos aqui disponibilizados controlam o início, do jogo, cria novas
+ * jogadas e verifica se o usuário errou ou se chegou na última fase.
+ *
+ * @since  29.09.2014
+ * @author Felipe Rodrigues Gil      - R.A. 248543
  * @author Leandro Melão Medeiros <leandro.medeiros.br@gmail.com> - R.A. 250544
  * @author Lidiane Aparecida Pimenta - R.A. 250822
- * @author Thiago de Godoy Sanches - R.A. 250821
- */
+ * @author Thiago de Godoy Sanches   - R.A. 250821
+ *
+ ******************************************************************************/
 public class Genius {
-    private GeniusMove[] moves = new GeniusMove[100];
-    private int currentMove;
+    private GeniusMove[] moves;
+    private final int maxLevels;
+    private int level;
 
-    public Genius(int MaxMoves) {
-        this.moves = new GeniusMove[MaxMoves];    
+    /**
+     * Construtor
+     * @param inMaxLevels - Define o nível de dificuldade do jogo
+     */
+    public Genius(int inMaxLevels) {
+        this.maxLevels = inMaxLevels;
+        this.start();
     }
     
-    public void start() {
-        this.moves[0] = new GeniusMove();
-        this.currentMove = 0;
+    /**
+     * Iniciar
+     * Limpa os movimentos que possam existir e reseta a fase atual do jogo
+     */
+    final public void start() {
+        this.moves = new GeniusMove[this.maxLevels];
+        this.level = -1;
     }
-    
-    public GeniusMove getLastMove() {
-        return this.moves[moves.length -1];
+
+    /**
+     * Obter Fase Atual
+     * @return Fase que o jogador está (inteiro)
+     */
+    public final int getCurrentLevel() {
+        return this.level;
     }
-    
-    public boolean nextPosition(int iPosition) {
-        if (this.moves[this.currentMove].position == iPosition) {
-            this.moves[this.moves.length] = new GeniusMove();
-            this.currentMove++;
-            
-            return true;
-        }
+
+    /**
+     * Obter Número da última fase
+     * @return dificuldade do jogo
+     */
+    final public int getMaxLevels() {
+        return this.maxLevels;
+    }
         
-        else {
-            this.start();
+    /**
+     * Novo Movimento.
+     * Incrementa a fase atual e cria um novo movimento para
+     *
+     * @return Verdadeiro caso consiga criar um novo movimento e falso caso o
+     * usuário tenha atingido a última fase (Vitória).
+     */
+    public boolean newMove() {
+        this.level++;
+        
+        if (this.level == (this.maxLevels -1)) {
             return false;
         }
+
+        else {
+            this.moves[this.level] = new GeniusMove(0);
+            return true;
+        }
+    }
+    
+    /**
+     * Obter Movimento da Fase
+     * @param inLevel fase desejada
+     * @return movimento correspondente
+     */
+    public GeniusMove getMoveAt(int inLevel) {
+        return this.moves[inLevel];
+    }
+    
+    /**
+     * Jogador Perdeu?
+     * @param inUserMove Movimento do jogador
+     * @param inLevel fase que está sendo testada
+     * @return Verdadeiro caso o jogador tenha errado e falso caso tenha
+     * acertado.
+     */
+    public boolean hasLost(GeniusMove inUserMove, int inLevel) {
+        if (inLevel > this.level) inLevel = this.level;
+
+        return (this.getMoveAt(inLevel).getId() != inUserMove.getId());
     }
 }
